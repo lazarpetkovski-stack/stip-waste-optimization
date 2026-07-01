@@ -3,30 +3,29 @@ import itertools
 
 st.title("🚛 ЈП ИСАР - ШТИП: ЛОГИСТИЧКА ОПТИМИЗАЦИЈА")
 
-# Дефинирање на податоците
 distanci = {
-    ("Baza", "Senjak"): 2.5,
-    ("Baza", "Babi"): 4.0,
-    ("Baza", "Deponija"): 12.0,
-    ("Senjak", "Babi"): 3.0,
-    ("Senjak", "Deponija"): 11.0,
-    ("Senjak", "Baza"): 2.5,
-    ("Babi", "Senjak"): 3.0,
-    ("Babi", "Deponija"): 14.0,
-    ("Babi", "Baza"): 4.0,
-    ("Deponija", "Baza"): 12.0,
-    ("Deponija", "Senjak"): 11.0,
-    ("Deponija", "Babi"): 14.0
+    ("Baza", "Senjak"): 2.5, ("Baza", "Babi"): 4.0, ("Baza", "Deponija"): 12.0,
+    ("Senjak", "Babi"): 3.0, ("Senjak", "Deponija"): 11.0, ("Senjak", "Baza"): 2.5,
+    ("Babi", "Senjak"): 3.0, ("Babi", "Deponija"): 14.0, ("Babi", "Baza"): 4.0,
+    ("Deponija", "Baza"): 12.0, ("Deponija", "Senjak"): 11.0, ("Deponija", "Babi"): 14.0
 }
 
-naselbi_za_poseta = ["Senjak", "Babi"]
+naselbi = ["Senjak", "Babi"]
 
-# Прикажување на податоците во апликацијата
-st.subheader("Локации и Растојанија")
-st.write("Камионот денес треба да ги посети овие населби:", naselbi_za_poseta)
-
-# Пример за едноставна логика за прикажување
 if st.button("Пресметај најкратка рута"):
-    # Овде би ја вметнал твојата логика за пермутации (itertools)
-    st.success("Оптимизацијата е извршена!")
-    st.write("Рутата е: Baza -> Senjak -> Babi -> Deponija")
+    najkratka_ruta = None
+    min_rastojanie = float('inf')
+    
+    # Сите комбинации за посета на населбите
+    for p in itertools.permutations(naselbi):
+        ruta = ["Baza"] + list(p) + ["Deponija"]
+        tekovno_rastojanie = 0
+        for i in range(len(ruta) - 1):
+            tekovno_rastojanie += distanci.get((ruta[i], ruta[i+1]), 0)
+            
+        if tekovno_rastojanie < min_rastojanie:
+            min_rastojanie = tekovno_rastojanie
+            najkratka_ruta = ruta
+
+    st.success(f"Најкратката рута е: {' -> '.join(najkratka_ruta)}")
+    st.write(f"Вкупно растојание: {min_rastojanie} км")
