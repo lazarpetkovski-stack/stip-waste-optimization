@@ -4,7 +4,7 @@ import itertools
 st.set_page_config(page_title="Логистика ИСАР", layout="wide")
 st.title("🚛 ЈП ИСАР - ШТИП: Логистички систем")
 
-# Иницијализација на меморијата за податоци
+# Иницијализација на меморијата
 if 'kamioni' not in st.session_state: st.session_state['kamioni'] = []
 if 'naselbi' not in st.session_state: st.session_state['naselbi'] = []
 
@@ -30,13 +30,22 @@ with tab2:
 
 # ТАБ 3: Оптимизација
 with tab3:
-    st.header("Пресметка на рути")
-    if st.button("Пресметај најкратка рута"):
-        naselbi = st.session_state['naselbi']
-        if not naselbi:
-            st.error("Прво внесете населби!")
+    st.header("⚙️ План за работа")
+    if st.button("Пресметај рута и капацитет"):
+        if not st.session_state['naselbi'] or not st.session_state['kamioni']:
+            st.warning("Ве молам внесете барем еден камион и една населба!")
         else:
-            # Твојата логика за оптимизација
-            st.write(f"Оптимизација за населби: {', '.join(naselbi)}")
-            st.success("Рутата е успешно пресметана врз основа на внесените податоци!")
-            # Овде можеш да ја додадеш логиката со itertools
+            vkupen_kapacitet = sum(k['kapacitet'] for k in st.session_state['kamioni'])
+            st.write(f"Вкупен капацитет: {vkupen_kapacitet} тони")
+            
+            naselbi = st.session_state['naselbi']
+            ruta = ["Baza"] + naselbi + ["Deponija"]
+            
+            st.success(f"Рута: {' -> '.join(ruta)}")
+            
+            # Логика за проверка (пр. по 2 тони отпад од населба)
+            if vkupen_kapacitet >= len(naselbi) * 2:
+                st.balloons()
+                st.write("✅ Капацитетот е доволен за денешната рута.")
+            else:
+                st.error("⚠️ Внимание: Потребен е дополнителен камион!")
